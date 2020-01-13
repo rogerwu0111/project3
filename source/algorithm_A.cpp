@@ -4,6 +4,8 @@
 #include "../include/algorithm.h"
 
 using namespace std;
+# define INFINITY 9999999
+# define MAX_DEPTH 5
 
 /******************************************************
  * In your algorithm, you can just use the the funcitons
@@ -25,6 +27,87 @@ using namespace std;
  * 4. The function that print out the current board statement
 *************************************************************************/
 
+int my_evaluate(Board board, int row, int column, PLAYER player){}
+
+int min_max_algorithm(Board board, int depth, int alpha, int beta, bool IsMaxLevel, int index[], Player player)
+{
+    Board copy_board;
+
+    if (depth == 0)
+    {
+        copy_board = board;
+        return my_evaluate(copy_board, index[0], index[1], player);
+    }
+
+    int i, j, eval;
+    if (IsMaxLevel)
+    {
+        int max = -INFINITY;
+        Player me = player;
+        for (i = 0; i<5; i++)
+        {
+            for (j = 0; j<6; j++)
+            {
+                copy_board = board;
+                if (copy_board.place_orb(i, j, &me))
+                {
+                    eval = min_max_algorithm(copy_board, depth-1, alpha, beta, false, index, player);
+                    if (eval > alpha) 
+                    {
+                        alpha = eval;
+                        // update
+                        if (depth == MAX_DEPTH)
+                        {
+                            index[0] = i;
+                            index[1] = j;
+                        }
+                    }
+                    if (alpha >= beta) break;
+                }
+            }
+            if (j < 6) break;
+        }
+
+        if (alpha == -INFINITY && depth == MAX_DEPTH)
+        {
+            index[0] = 0;
+            index[1] = 0;
+        }
+
+        return alpha;
+    }
+
+    else
+    {
+        // construct opponent
+        char color = player.get_color();
+        if (color == RED) color = BLUE;
+        else color = RED;
+        Player opponent(color);
+        // end of construct
+        
+        for  (i = 0; i<5; i++)
+        {
+            for (j = 0; j<6; j++)
+            {
+                copy_board = board;
+                if (copy_board.place_orb(i, j, &opponent))
+                {
+                    eval = min_max_algorithm(copy_board, depth-1, alpha, beta, true, index, player);
+                    if (beta > eval)
+                    {
+                        beta = eval;
+                        // Note we don't need to update index
+                    }
+                    if (alpha >= beta) break;
+                }
+            }
+            if (j < 6) break;
+        }
+        return beta;
+    }
+    
+}
 
 void algorithm_A(Board board, Player player, int index[]){
 
@@ -35,16 +118,5 @@ void algorithm_A(Board board, Player player, int index[]){
 
     //////////// Random Algorithm ////////////
     // Here is the random algorithm for your reference, you can delete or comment it.
-    srand(time(NULL));
-    int row, col;
-    int color = player.get_color();
     
-    while(1){
-        row = rand() % 5;
-        col = rand() % 6;
-        if(board.get_cell_color(row, col) == color || board.get_cell_color(row, col) == 'w') break;
-    }
-
-    index[0] = row;
-    index[1] = col;
-}s
+}
