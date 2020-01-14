@@ -80,6 +80,7 @@ int min_max_algorithm(Board board, int depth, int alpha, int beta, bool IsMaxLev
             for (j = 0; j<COL; j++)
             {
                 copy_board = board;
+                me = player;
                 if (copy_board.place_orb(i, j, &me))
                 {
                     eval = min_max_algorithm(copy_board, depth-1, alpha, beta, false, index, player);
@@ -110,6 +111,7 @@ int min_max_algorithm(Board board, int depth, int alpha, int beta, bool IsMaxLev
         if (color == RED) color = BLUE;
         else color = RED;
         Player opponent(color);
+        Player enemy = opponent;
         // end of construct
         
         for  (i = 0; i<ROW; i++)
@@ -117,7 +119,8 @@ int min_max_algorithm(Board board, int depth, int alpha, int beta, bool IsMaxLev
             for (j = 0; j<COL; j++)
             {
                 copy_board = board;
-                if (copy_board.place_orb(i, j, &opponent))
+                enemy = opponent;
+                if (copy_board.place_orb(i, j, &enemy))
                 {
                     eval = min_max_algorithm(copy_board, depth-1, alpha, beta, true, index, player);
                     if (eval < min) min = eval;
