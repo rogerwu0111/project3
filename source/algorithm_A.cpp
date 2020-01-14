@@ -224,7 +224,9 @@ int min_max_algorithm(Board board, int depth, int alpha, int beta, bool IsMaxLev
                 me = player;
                 if (copy_board.place_orb(i, j, &me))
                 {
-                    eval = min_max_algorithm(copy_board, depth-1, alpha, beta, false, index, player);
+                    if (copy_board.win_the_game(me)) eval = INFINITY;
+                    else eval = min_max_algorithm(copy_board, depth-1, alpha, beta, false, index, player);
+
                     if (eval > max) 
                     {
                         max = eval;
@@ -263,7 +265,8 @@ int min_max_algorithm(Board board, int depth, int alpha, int beta, bool IsMaxLev
                 enemy = opponent;
                 if (copy_board.place_orb(i, j, &enemy))
                 {
-                    eval = min_max_algorithm(copy_board, depth-1, alpha, beta, true, index, player);
+                    if (copy_board.win_the_game(enemy)) eval = -INFINITY;
+                    else eval = min_max_algorithm(copy_board, depth-1, alpha, beta, true, index, player);
                     if (eval < min) min = eval;
                     if (min < beta) beta = min;
                     if (alpha >= beta) break;
