@@ -27,7 +27,38 @@ using namespace std;
  * 4. The function that print out the current board statement
 *************************************************************************/
 
-int my_evaluate(Board board, int row, int column, PLAYER player){}
+int my_evaluate(Board board, Player player)
+{
+    char my_color, enemy_color;
+    if (player.get_color() == RED)
+    {
+        my_color = RED;
+        enemy_color = BLUE;
+    }
+    else
+    {
+        my_color = BLUE;
+        enemy_color = RED;
+    }
+    
+    int i, j;
+    int point = 0;
+    for (i = 0; i<5; i++)
+    {
+        for (j = 0; j<6; j++)
+        {
+            if (board.get_cell_color(i, j) == my_color)
+            {
+                point += 4-board.get_capacity(i, j);
+            }
+            else if (board.get_cell_color(i, j) == enemy_color)
+            {
+                point -= 4-board.get_capacity(i, j);
+            }
+        }
+    }
+    return point;
+}
 
 int min_max_algorithm(Board board, int depth, int alpha, int beta, bool IsMaxLevel, int index[], Player player)
 {
@@ -36,7 +67,7 @@ int min_max_algorithm(Board board, int depth, int alpha, int beta, bool IsMaxLev
     if (depth == 0)
     {
         copy_board = board;
-        return my_evaluate(copy_board, index[0], index[1], player);
+        return my_evaluate(copy_board, player);
     }
 
     int i, j, eval;
@@ -52,9 +83,9 @@ int min_max_algorithm(Board board, int depth, int alpha, int beta, bool IsMaxLev
                 if (copy_board.place_orb(i, j, &me))
                 {
                     eval = min_max_algorithm(copy_board, depth-1, alpha, beta, false, index, player);
-                    if (eval > alpha) 
+                    if (eval > max) 
                     {
-                        alpha = eval;
+                        max = eval;
                         // update
                         if (depth == MAX_DEPTH)
                         {
@@ -62,23 +93,25 @@ int min_max_algorithm(Board board, int depth, int alpha, int beta, bool IsMaxLev
                             index[1] = j;
                         }
                     }
+                    if (max > alpha) alpha = max;
                     if (alpha >= beta) break;
                 }
             }
             if (j < 6) break;
         }
 
-        if (alpha == -INFINITY && depth == MAX_DEPTH)
+        if (max == -INFINITY && depth == MAX_DEPTH)
         {
             index[0] = 0;
             index[1] = 0;
         }
 
-        return alpha;
+        return max;
     }
 
     else
     {
+        int min = INFINITY;
         // construct opponent
         char color = player.get_color();
         if (color == RED) color = BLUE;
@@ -94,19 +127,15 @@ int min_max_algorithm(Board board, int depth, int alpha, int beta, bool IsMaxLev
                 if (copy_board.place_orb(i, j, &opponent))
                 {
                     eval = min_max_algorithm(copy_board, depth-1, alpha, beta, true, index, player);
-                    if (beta > eval)
-                    {
-                        beta = eval;
-                        // Note we don't need to update index
-                    }
+                    if (eval < min) min = eval;
+                    if (min < beta) beta = min;
                     if (alpha >= beta) break;
                 }
             }
             if (j < 6) break;
         }
-        return beta;
+        return min;
     }
-    
 }
 
 void algorithm_A(Board board, Player player, int index[]){
@@ -118,5 +147,5 @@ void algorithm_A(Board board, Player player, int index[]){
 
     //////////// Random Algorithm ////////////
     // Here is the random algorithm for your reference, you can delete or comment it.
-    
+    int x = min_max_algorithm(board, 5, -INFINITY, INFINITY, true, index, player);
 }
