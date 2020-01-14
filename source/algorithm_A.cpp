@@ -5,7 +5,7 @@
 
 using namespace std;
 # define INFINITY 9999999
-# define MAX_DEPTH 4
+# define MAX_DEPTH 5
 
 /******************************************************
  * In your algorithm, you can just use the the funcitons
