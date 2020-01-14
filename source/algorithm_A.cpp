@@ -43,9 +43,9 @@ int my_evaluate(Board board, Player player)
     
     int i, j;
     int point = 0;
-    for (i = 0; i<5; i++)
+    for (i = 0; i<ROW; i++)
     {
-        for (j = 0; j<6; j++)
+        for (j = 0; j<COL; j++)
         {
             if (board.get_cell_color(i, j) == my_color)
             {
@@ -75,9 +75,9 @@ int min_max_algorithm(Board board, int depth, int alpha, int beta, bool IsMaxLev
     {
         int max = -INFINITY;
         Player me = player;
-        for (i = 0; i<5; i++)
+        for (i = 0; i<ROW; i++)
         {
-            for (j = 0; j<6; j++)
+            for (j = 0; j<COL; j++)
             {
                 copy_board = board;
                 if (copy_board.place_orb(i, j, &me))
@@ -99,13 +99,6 @@ int min_max_algorithm(Board board, int depth, int alpha, int beta, bool IsMaxLev
             }
             if (j < 6) break;
         }
-
-        if (max == -INFINITY && depth == MAX_DEPTH)
-        {
-            index[0] = 0;
-            index[1] = 0;
-        }
-
         return max;
     }
 
@@ -119,9 +112,9 @@ int min_max_algorithm(Board board, int depth, int alpha, int beta, bool IsMaxLev
         Player opponent(color);
         // end of construct
         
-        for  (i = 0; i<5; i++)
+        for  (i = 0; i<ROW; i++)
         {
-            for (j = 0; j<6; j++)
+            for (j = 0; j<COL; j++)
             {
                 copy_board = board;
                 if (copy_board.place_orb(i, j, &opponent))
@@ -147,5 +140,9 @@ void algorithm_A(Board board, Player player, int index[]){
 
     //////////// Random Algorithm ////////////
     // Here is the random algorithm for your reference, you can delete or comment it.
+    index[0] = index[1] = INFINITY;
     int x = min_max_algorithm(board, MAX_DEPTH, -INFINITY, INFINITY, true, index, player);
+    if (index[0] == INFINITY && index[1] == INFINITY)
+        index[0] = index[1] = 0;
+    
 }
