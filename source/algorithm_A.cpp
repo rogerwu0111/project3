@@ -43,6 +43,7 @@ int my_evaluate(Board board, Player player)
     
     int i, j;
     int point = 0;
+    // my orb minus enemy orb with weighting
     for (i = 0; i<ROW; i++)
     {
         for (j = 0; j<COL; j++)
@@ -57,6 +58,145 @@ int my_evaluate(Board board, Player player)
             }
         }
     }
+
+    // check "absolute" position
+    int adjROW, adjCOL, current_num, current_capacity, adj_num, adj_capacity;
+    bool IsAbsolute;
+    // my orb
+    for (i = 0; i<ROW; i++)
+    {
+        for (j = 0; j<COL; j++)
+        {
+            if (board.get_cell_color(i, j) == my_color)
+            {
+                current_num = board.get_orbs_num(i, j);
+                current_capacity = board.get_capacity(i, j);
+                IsAbsolute = true;
+
+                adjROW = i+1;
+                adjCOL = j;
+                adj_num = board.get_orbs_num(adjROW, adjCOL);
+                adj_capacity = board.get_capacity(adjROW, adjCOL);
+                if (adjROW < ROW)
+                {
+                    if (board.get_cell_color(adjROW, adjCOL) == enemy_color &&
+                    adj_capacity-adj_num <= current_capacity-current_num)
+                    {
+                        IsAbsolute = false;
+                    }
+                }
+
+                adjROW = i-1;
+                adjCOL = j;
+                adj_num = board.get_orbs_num(adjROW, adjCOL);
+                adj_capacity = board.get_capacity(adjROW, adjCOL);
+                if (adjROW >= 0)
+                {
+                    if (board.get_cell_color(adjROW, adjCOL) == enemy_color &&
+                    adj_capacity-adj_num <= current_capacity-current_num)
+                    {
+                        IsAbsolute = false;
+                    }
+                }
+
+                adjROW = i;
+                adjCOL = j+1;
+                adj_num = board.get_orbs_num(adjROW, adjCOL);
+                adj_capacity = board.get_capacity(adjROW, adjCOL);
+                if (adjCOL < COL)
+                {
+                    if (board.get_cell_color(adjROW, adjCOL) == enemy_color &&
+                    adj_capacity-adj_num <= current_capacity-current_num)
+                    {
+                        IsAbsolute = false;
+                    }
+                }
+
+                adjROW = i;
+                adjCOL = j-1;
+                adj_num = board.get_orbs_num(adjROW, adjCOL);
+                adj_capacity = board.get_capacity(adjROW, adjCOL);
+                if (adjCOL >= 0)
+                {
+                    if (board.get_cell_color(adjROW, adjCOL) == enemy_color &&
+                    adj_capacity-adj_num <= current_capacity-current_num)
+                    {
+                        IsAbsolute = false;
+                    }
+                }
+
+                if (IsAbsolute) point++;
+            }
+        }
+    }
+
+    // enemy orb
+    for (i=0; i<ROW; i++)
+    {
+        for (j = 0; j<COL; j++)
+        {
+            if (board.get_cell_color(i, j) == enemy_color)
+            {
+                current_num = board.get_orbs_num(i, j);
+                current_capacity = board.get_capacity(i, j);
+                IsAbsolute = true;
+
+                adjROW = i+1;
+                adjCOL = j;
+                adj_num = board.get_orbs_num(i, j);
+                adj_capacity = board.get_capacity(i, j);
+                if (adjROW < ROW)
+                {
+                    if (board.get_cell_color(adjROW, adjCOL) == my_color &&
+                    adj_capacity-adj_num <= current_capacity-current_num)
+                    {
+                        IsAbsolute = false;
+                    }
+                }
+
+                adjROW = i-1;
+                adjCOL = j;
+                adj_num = board.get_orbs_num(i, j);
+                adj_capacity = board.get_capacity(i, j);
+                if (adjROW >= 0)
+                {
+                    if (board.get_cell_color(adjROW, adjCOL) == my_color &&
+                    adj_capacity-adj_num <= current_capacity-current_num)
+                    {
+                        IsAbsolute = false;
+                    }
+                }
+
+                adjROW = i;
+                adjCOL = j+1;
+                adj_num = board.get_orbs_num(i, j);
+                adj_capacity = board.get_capacity(i, j);
+                if (adjCOL < COL)
+                {
+                    if (board.get_cell_color(adjROW, adjCOL) == my_color &&
+                    adj_capacity-adj_num <= current_capacity-current_num)
+                    {
+                        IsAbsolute = false;
+                    }
+                }
+                
+                adjROW = i;
+                adjCOL = j-1;
+                adj_num = board.get_orbs_num(i, j);
+                adj_capacity = board.get_capacity(i, j);
+                if (adjCOL >= 0)
+                {
+                    if (board.get_cell_color(adjROW, adjCOL) == my_color &&
+                    adj_capacity-adj_num <= current_capacity-current_num)
+                    {
+                        IsAbsolute = false;
+                    }
+                }
+
+                if (IsAbsolute) point++;
+            }
+        }
+    }
     return point;
 }
 
@@ -66,8 +206,9 @@ int min_max_algorithm(Board board, int depth, int alpha, int beta, bool IsMaxLev
 
     if (depth == 0)
     {
+        Player me = player;
         copy_board = board;
-        return my_evaluate(copy_board, player);
+        return my_evaluate(copy_board, me);
     }
 
     int i, j, eval;
@@ -98,7 +239,7 @@ int min_max_algorithm(Board board, int depth, int alpha, int beta, bool IsMaxLev
                     if (alpha >= beta) break;
                 }
             }
-            if (j < 6) break;
+            if (j < COL) break;
         }
         return max;
     }
@@ -128,7 +269,7 @@ int min_max_algorithm(Board board, int depth, int alpha, int beta, bool IsMaxLev
                     if (alpha >= beta) break;
                 }
             }
-            if (j < 6) break;
+            if (j < COL) break;
         }
         return min;
     }
