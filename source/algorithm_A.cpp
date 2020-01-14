@@ -5,7 +5,7 @@
 
 using namespace std;
 # define INFINITY 9999999
-# define MAX_DEPTH 5
+# define MAX_DEPTH 4
 
 /******************************************************
  * In your algorithm, you can just use the the funcitons
@@ -147,5 +147,5 @@ void algorithm_A(Board board, Player player, int index[]){
 
     //////////// Random Algorithm ////////////
     // Here is the random algorithm for your reference, you can delete or comment it.
-    int x = min_max_algorithm(board, 5, -INFINITY, INFINITY, true, index, player);
+    int x = min_max_algorithm(board, MAX_DEPTH, -INFINITY, INFINITY, true, index, player);
 }
