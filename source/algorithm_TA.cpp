@@ -285,7 +285,7 @@ float gameTree::BoardEvaluator(TreeNode *Node, int difficulty){
     return orbScore;
 }
 
-/*
+
 void algorithm_B(Board board, Player player, int index[]){
     // algorithm_B is randomMove version bot
     srand(time(NULL)*time(NULL));
@@ -301,7 +301,7 @@ void algorithm_B(Board board, Player player, int index[]){
     index[0] = row;
     index[1] = col;
 }
-*/
+
 void algorithm_C(Board board, Player player, int index[]){
     // algorithm_C is noLook version bot
     int row, col;
@@ -348,7 +348,7 @@ void algorithm_E(Board board, Player player, int index[]){
 
 
 //// testing ////
-
+/*
 # define INFINITY 9999999
 # define MAX_DEPTH 5
 
@@ -553,3 +553,4 @@ void algorithm_B(Board board, Player player, int index[]){
         index[1] = j;
     }
 }
+*/
