@@ -285,7 +285,7 @@ float gameTree::BoardEvaluator(TreeNode *Node, int difficulty){
     return orbScore;
 }
 
-
+/*
 void algorithm_B(Board board, Player player, int index[]){
     // algorithm_B is randomMove version bot
     srand(time(NULL)*time(NULL));
@@ -301,7 +301,7 @@ void algorithm_B(Board board, Player player, int index[]){
     index[0] = row;
     index[1] = col;
 }
-
+*/
 void algorithm_C(Board board, Player player, int index[]){
     // algorithm_C is noLook version bot
     int row, col;
@@ -344,4 +344,212 @@ void algorithm_E(Board board, Player player, int index[]){
     TreeNode *orbNode = gt.chooseOrb(HARD_BOARD_EVALUATOR);
     index[0] = orbNode->getX();
     index[1] = orbNode->getY();
+}
+
+
+//// testing ////
+
+# define INFINITY 9999999
+# define MAX_DEPTH 5
+
+int my_evaluate2(Board board, Player player)
+{
+    char my_color, enemy_color;
+    if (player.get_color() == RED)
+    {
+        my_color = RED;
+        enemy_color = BLUE;
+    }
+    else
+    {
+        my_color = BLUE;
+        enemy_color = RED;
+    }
+    
+    int i, j, adjROW, adjCOL, current_num, current_capacity, adj_num, adj_capacity;
+    bool IsGoodCell;
+    int point = 0;
+    
+    for (i = 0; i<ROW; i++)
+    {
+        for (j = 0; j<COL; j++)
+        {
+            // check the adj cell of my cell
+            if (board.get_cell_color(i, j) == my_color)
+            {                
+                IsGoodCell = true;
+                current_num = board.get_orbs_num(i, j);
+                current_capacity = board.get_capacity(i, j);
+                point += current_num;
+
+                adjROW = i+1;
+                adjCOL = j;
+                if (adjROW < ROW)
+                {
+                    adj_num = board.get_orbs_num(adjROW, adjCOL);
+                    adj_capacity = board.get_capacity(adjROW, adjCOL);
+                    if (adj_capacity - adj_num == 1 && board.get_cell_color(adjROW, adjCOL) == enemy_color)
+                    {
+                        point -= 5 - current_capacity;
+                        IsGoodCell = false;
+                    }
+                }
+
+                adjROW = i-1;
+                adjCOL = j;
+                if (adjROW >= 0)
+                {
+                    adj_num = board.get_orbs_num(adjROW, adjCOL);
+                    adj_capacity = board.get_capacity(adjROW, adjCOL);
+                    if (adj_capacity - adj_num == 1 && board.get_cell_color(adjROW, adjCOL) == enemy_color)
+                    {
+                        point -= 5 - current_capacity;
+                        IsGoodCell = false;
+                    }
+                }
+
+                adjROW = i;
+                adjCOL = j+1;
+                if (adjCOL < COL)
+                {
+                    adj_num = board.get_orbs_num(adjROW, adjCOL);
+                    adj_capacity = board.get_capacity(adjROW, adjCOL);
+                    if (adj_capacity - adj_num == 1 && board.get_cell_color(adjROW, adjCOL) == enemy_color)
+                    {
+                        point -= 5 - current_capacity;
+                        IsGoodCell = false;
+                    }
+                }
+
+                adjROW = i;
+                adjCOL = j-1;
+                if (adjCOL >= 0)
+                {
+                    adj_num = board.get_orbs_num(adjROW, adjCOL);
+                    adj_capacity = board.get_capacity(adjROW, adjCOL);
+                    if (adj_capacity - adj_num == 1 && board.get_cell_color(adjROW, adjCOL) == enemy_color)
+                    {
+                        point -= 5 - current_capacity;
+                        IsGoodCell = false;
+                    }
+                }
+
+                // some weighting
+                if (IsGoodCell)
+                {
+                    if (current_capacity == 2)
+                        point += 3;
+                    else if (current_capacity == 3)
+                        point += 2;
+                    else{}
+
+                    if (current_capacity - current_num == 1)
+                        point += 2;
+                    else{}
+                }
+            }
+            // end of check
+        }
+    }
+
+    return point;
+}
+
+int min_max_algorithm2(Board board, int depth, int alpha, int beta, bool IsMaxLevel, int index[], Player player)
+{
+    Board copy_board;
+
+    if (depth == 0)
+    {
+        Player me = player;
+        copy_board = board;
+        return my_evaluate2(copy_board, me);
+    }
+
+    int i, j, eval;
+    if (IsMaxLevel)
+    {
+        int max = -INFINITY;
+        Player me = player;
+        for (i = 0; i<ROW; i++)
+        {
+            for (j = 0; j<COL; j++)
+            {
+                copy_board = board;
+                me = player;
+                if (copy_board.place_orb(i, j, &me))
+                {
+                    if (copy_board.win_the_game(me)) eval = INFINITY;
+                    else eval = min_max_algorithm2(copy_board, depth-1, alpha, beta, false, index, player);
+
+                    if (eval > max) 
+                    {
+                        max = eval;
+                        // update
+                        if (depth == MAX_DEPTH)
+                        {
+                            index[0] = i;
+                            index[1] = j;
+                        }
+                    }
+                    if (max > alpha) alpha = max;
+                    if (alpha >= beta) break;
+                }
+            }
+            if (j < COL) break;
+        }
+        return max;
+    }
+
+    else
+    {
+        int min = INFINITY;
+        // construct opponent
+        char color = player.get_color();
+        if (color == RED) color = BLUE;
+        else color = RED;
+        Player opponent(color);
+        Player enemy = opponent;
+        // end of construct
+        
+        for  (i = 0; i<ROW; i++)
+        {
+            for (j = 0; j<COL; j++)
+            {
+                copy_board = board;
+                enemy = opponent;
+                if (copy_board.place_orb(i, j, &enemy))
+                {
+                    if (copy_board.win_the_game(enemy)) eval = -INFINITY;
+                    else eval = min_max_algorithm2(copy_board, depth-1, alpha, beta, true, index, player);
+                    if (eval < min) min = eval;
+                    if (min < beta) beta = min;
+                    if (alpha >= beta) break;
+                }
+            }
+            if (j < COL) break;
+        }
+        return min;
+    }
+}
+
+void algorithm_B(Board board, Player player, int index[]){
+
+    index[0] = index[1] = INFINITY;
+    int x = min_max_algorithm2(board, MAX_DEPTH, -INFINITY, INFINITY, true, index, player);
+    if (index[0] == INFINITY && index[1] == INFINITY)
+    {
+        // randomly select a point
+        int i,j;
+        char color = player.get_color();
+        for (i = 0; i<ROW; i++)
+        {
+            for (j = 0; j<COL; j++)
+            {
+                if(board.get_cell_color(i, j) == color || board.get_cell_color(i, j) == 'w') break;
+            }
+        }
+        index[0] = i;
+        index[1] = j;
+    }
 }

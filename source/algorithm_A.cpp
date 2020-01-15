@@ -63,7 +63,7 @@ int my_evaluate(Board board, Player player)
                 {
                     adj_num = board.get_orbs_num(adjROW, adjCOL);
                     adj_capacity = board.get_capacity(adjROW, adjCOL);
-                    if (adj_capacity - adj_num == 1 && board.get_cell_color(i, j) == enemy_color)
+                    if (adj_capacity - adj_num == 1 && board.get_cell_color(adjROW, adjCOL) == enemy_color)
                     {
                         point -= current_num * (5 - current_capacity);
                         IsGoodCell = false;
@@ -76,7 +76,7 @@ int my_evaluate(Board board, Player player)
                 {
                     adj_num = board.get_orbs_num(adjROW, adjCOL);
                     adj_capacity = board.get_capacity(adjROW, adjCOL);
-                    if (adj_capacity - adj_num == 1 && board.get_cell_color(i, j) == enemy_color)
+                    if (adj_capacity - adj_num == 1 && board.get_cell_color(adjROW, adjCOL) == enemy_color)
                     {
                         point -= current_num * (5 - current_capacity);
                         IsGoodCell = false;
@@ -89,7 +89,7 @@ int my_evaluate(Board board, Player player)
                 {
                     adj_num = board.get_orbs_num(adjROW, adjCOL);
                     adj_capacity = board.get_capacity(adjROW, adjCOL);
-                    if (adj_capacity - adj_num == 1 && board.get_cell_color(i, j) == enemy_color)
+                    if (adj_capacity - adj_num == 1 && board.get_cell_color(adjROW, adjCOL) == enemy_color)
                     {
                         point -= current_num * (5 - current_capacity);
                         IsGoodCell = false;
@@ -102,7 +102,7 @@ int my_evaluate(Board board, Player player)
                 {
                     adj_num = board.get_orbs_num(adjROW, adjCOL);
                     adj_capacity = board.get_capacity(adjROW, adjCOL);
-                    if (adj_capacity - adj_num == 1 && board.get_cell_color(i, j) == enemy_color)
+                    if (adj_capacity - adj_num == 1 && board.get_cell_color(adjROW, adjCOL) == enemy_color)
                     {
                         point -= current_num * (5 - current_capacity);
                         IsGoodCell = false;
