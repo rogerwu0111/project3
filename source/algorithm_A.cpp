@@ -41,162 +41,92 @@ int my_evaluate(Board board, Player player)
         enemy_color = RED;
     }
     
-    int i, j;
+    int i, j, adjROW, adjCOL, current_num, current_capacity, adj_num, adj_capacity;
+    bool IsGoodCell;
     int point = 0;
-    // my orb minus enemy orb with weighting
+    
     for (i = 0; i<ROW; i++)
     {
         for (j = 0; j<COL; j++)
         {
+            // check the adj cell of my cell
             if (board.get_cell_color(i, j) == my_color)
-            {
-                point += 4-board.get_capacity(i, j);
-            }
-            else if (board.get_cell_color(i, j) == enemy_color)
-            {
-                point -= 4-board.get_capacity(i, j);
-            }
-        }
-    }
-
-    // check "absolute" position
-    int adjROW, adjCOL, current_num, current_capacity, adj_num, adj_capacity;
-    bool IsAbsolute;
-    // my orb
-    for (i = 0; i<ROW; i++)
-    {
-        for (j = 0; j<COL; j++)
-        {
-            if (board.get_cell_color(i, j) == my_color)
-            {
+            {                
+                IsGoodCell = true;
                 current_num = board.get_orbs_num(i, j);
                 current_capacity = board.get_capacity(i, j);
-                IsAbsolute = true;
+                point += current_num;
 
                 adjROW = i+1;
                 adjCOL = j;
-                adj_num = board.get_orbs_num(adjROW, adjCOL);
-                adj_capacity = board.get_capacity(adjROW, adjCOL);
                 if (adjROW < ROW)
                 {
-                    if (board.get_cell_color(adjROW, adjCOL) == enemy_color &&
-                    adj_capacity-adj_num <= current_capacity-current_num)
+                    adj_num = board.get_orbs_num(adjROW, adjCOL);
+                    adj_capacity = board.get_capacity(adjROW, adjCOL);
+                    if (adj_capacity - adj_num == 1 && board.get_cell_color(i, j) == enemy_color)
                     {
-                        IsAbsolute = false;
+                        point -= current_num * (5 - current_capacity);
+                        IsGoodCell = false;
                     }
                 }
 
                 adjROW = i-1;
                 adjCOL = j;
-                adj_num = board.get_orbs_num(adjROW, adjCOL);
-                adj_capacity = board.get_capacity(adjROW, adjCOL);
                 if (adjROW >= 0)
                 {
-                    if (board.get_cell_color(adjROW, adjCOL) == enemy_color &&
-                    adj_capacity-adj_num <= current_capacity-current_num)
+                    adj_num = board.get_orbs_num(adjROW, adjCOL);
+                    adj_capacity = board.get_capacity(adjROW, adjCOL);
+                    if (adj_capacity - adj_num == 1 && board.get_cell_color(i, j) == enemy_color)
                     {
-                        IsAbsolute = false;
+                        point -= current_num * (5 - current_capacity);
+                        IsGoodCell = false;
                     }
                 }
 
                 adjROW = i;
                 adjCOL = j+1;
-                adj_num = board.get_orbs_num(adjROW, adjCOL);
-                adj_capacity = board.get_capacity(adjROW, adjCOL);
                 if (adjCOL < COL)
                 {
-                    if (board.get_cell_color(adjROW, adjCOL) == enemy_color &&
-                    adj_capacity-adj_num <= current_capacity-current_num)
+                    adj_num = board.get_orbs_num(adjROW, adjCOL);
+                    adj_capacity = board.get_capacity(adjROW, adjCOL);
+                    if (adj_capacity - adj_num == 1 && board.get_cell_color(i, j) == enemy_color)
                     {
-                        IsAbsolute = false;
+                        point -= current_num * (5 - current_capacity);
+                        IsGoodCell = false;
                     }
                 }
 
                 adjROW = i;
                 adjCOL = j-1;
-                adj_num = board.get_orbs_num(adjROW, adjCOL);
-                adj_capacity = board.get_capacity(adjROW, adjCOL);
                 if (adjCOL >= 0)
                 {
-                    if (board.get_cell_color(adjROW, adjCOL) == enemy_color &&
-                    adj_capacity-adj_num <= current_capacity-current_num)
+                    adj_num = board.get_orbs_num(adjROW, adjCOL);
+                    adj_capacity = board.get_capacity(adjROW, adjCOL);
+                    if (adj_capacity - adj_num == 1 && board.get_cell_color(i, j) == enemy_color)
                     {
-                        IsAbsolute = false;
+                        point -= current_num * (5 - current_capacity);
+                        IsGoodCell = false;
                     }
                 }
 
-                if (IsAbsolute) point++;
+                // some weighting
+                if (IsGoodCell)
+                {
+                    if (current_capacity == 2)
+                        point += current_num * 3;
+                    else if (current_capacity == 3)
+                        point += current_num * 2;
+                    else{}
+
+                    if (current_capacity - current_num == 1)
+                        point += current_num * 2;
+                    else{}
+                }
             }
+            // end of check
         }
     }
 
-    // enemy orb
-    for (i=0; i<ROW; i++)
-    {
-        for (j = 0; j<COL; j++)
-        {
-            if (board.get_cell_color(i, j) == enemy_color)
-            {
-                current_num = board.get_orbs_num(i, j);
-                current_capacity = board.get_capacity(i, j);
-                IsAbsolute = true;
-
-                adjROW = i+1;
-                adjCOL = j;
-                adj_num = board.get_orbs_num(i, j);
-                adj_capacity = board.get_capacity(i, j);
-                if (adjROW < ROW)
-                {
-                    if (board.get_cell_color(adjROW, adjCOL) == my_color &&
-                    adj_capacity-adj_num <= current_capacity-current_num)
-                    {
-                        IsAbsolute = false;
-                    }
-                }
-
-                adjROW = i-1;
-                adjCOL = j;
-                adj_num = board.get_orbs_num(i, j);
-                adj_capacity = board.get_capacity(i, j);
-                if (adjROW >= 0)
-                {
-                    if (board.get_cell_color(adjROW, adjCOL) == my_color &&
-                    adj_capacity-adj_num <= current_capacity-current_num)
-                    {
-                        IsAbsolute = false;
-                    }
-                }
-
-                adjROW = i;
-                adjCOL = j+1;
-                adj_num = board.get_orbs_num(i, j);
-                adj_capacity = board.get_capacity(i, j);
-                if (adjCOL < COL)
-                {
-                    if (board.get_cell_color(adjROW, adjCOL) == my_color &&
-                    adj_capacity-adj_num <= current_capacity-current_num)
-                    {
-                        IsAbsolute = false;
-                    }
-                }
-                
-                adjROW = i;
-                adjCOL = j-1;
-                adj_num = board.get_orbs_num(i, j);
-                adj_capacity = board.get_capacity(i, j);
-                if (adjCOL >= 0)
-                {
-                    if (board.get_cell_color(adjROW, adjCOL) == my_color &&
-                    adj_capacity-adj_num <= current_capacity-current_num)
-                    {
-                        IsAbsolute = false;
-                    }
-                }
-
-                if (IsAbsolute) point++;
-            }
-        }
-    }
     return point;
 }
 
@@ -280,16 +210,21 @@ int min_max_algorithm(Board board, int depth, int alpha, int beta, bool IsMaxLev
 
 void algorithm_A(Board board, Player player, int index[]){
 
-    // cout << board.get_capacity(0, 0) << endl;
-    // cout << board.get_orbs_num(0, 0) << endl;
-    // cout << board.get_cell_color(0, 0) << endl;
-    // board.print_current_board(0, 0, 0);
-
-    //////////// Random Algorithm ////////////
-    // Here is the random algorithm for your reference, you can delete or comment it.
     index[0] = index[1] = INFINITY;
     int x = min_max_algorithm(board, MAX_DEPTH, -INFINITY, INFINITY, true, index, player);
     if (index[0] == INFINITY && index[1] == INFINITY)
-        index[0] = index[1] = 0;
-    
+    {
+        // randomly select a point
+        int i,j;
+        char color = player.get_color();
+        for (i = 0; i<ROW; i++)
+        {
+            for (j = 0; j<COL; j++)
+            {
+                if(board.get_cell_color(i, j) == color || board.get_cell_color(i, j) == 'w') break;
+            }
+        }
+        index[0] = i;
+        index[1] = j;
+    }
 }

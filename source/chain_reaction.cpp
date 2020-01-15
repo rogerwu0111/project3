@@ -19,14 +19,14 @@ int main(){
     while(1){
 
         //////////// Red Player operations ////////////
-        algorithm_E(board, red_player, index);
+        algorithm_B(board, red_player, index);
         board.place_orb(index[0], index[1], &red_player);
 
         if(rules_violation(red_player)) return 0;
 
         board.print_current_board(index[0], index[1], round);
         round++;
-
+        //system("pause"); // pause
         if(board.win_the_game(red_player) && !first_two_step){
             cout << "Red Player won the game !!!" << endl;
             return 0;
@@ -40,7 +40,7 @@ int main(){
         
         board.print_current_board(index[0], index[1], round);
         round++;
-
+        //system("pause"); // pause
         if(board.win_the_game(blue_player) && !first_two_step){
             cout << "Blue Player won the game !!!" << endl;
             return 0;
